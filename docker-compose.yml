@@ -30,34 +30,34 @@ services:
         limits:
           memory: 100M
 
-    postgres:
-      image: postgres:16
-      container_name: postgres
-      restart: unless-stopped
-      environment:
-        POSTGRES_USER: ${POSTGRES_USER}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      volumes:
-        - pgdata:/var/lib/postgresql/data
-        - ./postgres.conf:/etc/postgresql/postgresql.conf
-      command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
-      ports:
-        - "5432:5432"
-      networks:
-        - logging-network
-        - external-sol-apis
-      logging:
-        driver: loki
-        options:
-          loki-url: "http://loki:3100/loki/api/v1/push"
-          loki-external-labels: "service=postgres,type=db"
-          loki-retries: "5"
-          loki-batch-size: "400"
-          mode: "non-blocking"
-      deploy:
-        resources:
-          limits:
-            memory: 150M
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres.conf:/etc/postgresql/postgresql.conf
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    ports:
+      - "5432:5432"
+    networks:
+      - logging-network
+      - external-sol-apis
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "service=postgres,type=db"
+        loki-retries: "5"
+        loki-batch-size: "400"
+        mode: "non-blocking"
+    deploy:
+      resources:
+        limits:
+          memory: 150M
 
 volumes:
   mongo_data:
