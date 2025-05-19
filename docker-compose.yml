@@ -1,18 +1,17 @@
 version: '3.8'
 
 services:
-  mongo:
-    image: mongo:4.4
-    container_name: mongo
+  mariadb:
+    image: mariadb:10.6
+    container_name: mariadb
     restart: unless-stopped
-    volumes:
-      - mongo_data:/data/db
-    command: mongod --wiredTigerCacheSizeGB 0.05 --quiet --nojournal --auth
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_MYSQL_PASS}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/my.cnf:ro
     ports:
-      - "27017:27017"
+      - "3306:3306"
     networks:
       - logging-network
       - external-sol-apis
@@ -20,14 +19,14 @@ services:
       driver: loki
       options:
         loki-url: "http://loki:3100/loki/api/v1/push"
-        loki-external-labels: "service=mongo,type=db"
+        loki-external-labels: "service=mariadb,type=db"
         loki-retries: "5"
         loki-batch-size: "400"
         mode: "non-blocking"
     deploy:
       resources:
         limits:
-          memory: 100M
+          memory: 300M
 
   postgres:
     image: postgres:16
@@ -59,7 +58,7 @@ services:
           memory: 150M
 
 volumes:
-  mongo_data:
+  mariadb_data:
   pgdata:
     driver: local
 
