@@ -26,7 +26,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 400M
+          memory: 800M
 
   postgres:
     image: postgres:16
@@ -67,3 +67,4 @@ networks:
     external: true
   external-sol-apis:
     external: true
+
