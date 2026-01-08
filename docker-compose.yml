@@ -26,7 +26,34 @@ services:
     deploy:
       resources:
         limits:
-          memory: 800M
+          memory: 900M
+
+  db_myplat_p001:
+    image: mariadb:10.6
+    container_name: db-myplat-p001
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_MYSQL_PASS}
+    volumes:
+      - db_myplat_p001_data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/my.cnf:ro
+    ports:
+      - "13301:3306"
+    networks:
+      - logging-network
+      - external-sol-apis
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "service=db-myplat-p001,type=db"
+        loki-retries: "5"
+        loki-batch-size: "400"
+        mode: "non-blocking"
+    deploy:
+      resources:
+        limits:
+          memory: 900M
 
   postgres:
     image: postgres:16
@@ -55,10 +82,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 150M
+          memory: 300M
 
 volumes:
   mariadb_data:
+  db_myplat_p001_data:
   pgdata:
     driver: local
 
@@ -67,4 +95,3 @@ networks:
     external: true
   external-sol-apis:
     external: true
-
